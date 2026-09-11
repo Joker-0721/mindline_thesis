@@ -1,0 +1,62 @@
+\chapter{剪切自锁问题}
+
+本章阐明剪切自锁现象的成因与抑制途径，为后续混合离散格式的构造提供理论依据。首先从 Mindlin 板理论的位移场与应变-位移关系出发，分析薄板极限下剪切应变约束导致的数值刚化机制；其次归纳传统有限元中减缩积分与位移-剪力混合离散两类免自锁方案的原理与局限；随后引入约束比与 LBB 条件，说明最优约束比的选取原则；最后给出本文采用的无网格增强免自锁方案的基本思想与 Mindlin 板运动学方程。
+
+\section{剪切自锁现象的物理机制}
+
+剪切自锁物理机制的详细推导与论述
+
+\section{传统有限元免剪切自锁的方案}
+
+\subsection{减缩积分方案}
+
+减缩积分方案的原理与算例
+
+\subsection{位移-剪力混合离散方案}
+
+位移-剪力混合离散方案的详细论述
+
+\section{最优约束比与无网格增强免自锁方案}
+
+LBB 条件与约束比的数学推导
+
+\section{Mindlin 板运动学方程}
+
+考虑 Mindlin 板的三维位移场 $\bar{u}_i(x_1,x_2,x_3)$：
+\begin{equation}
+\begin{cases}
+\bar{u}_\alpha(x_1,x_2,x_3) = u_\alpha(x_1,x_2) - x_3\varphi_\alpha(x_1,x_2), & \alpha = 1,2 \\
+\bar{u}_3(x_1,x_2,x_3) = w(x_1,x_2),
+\end{cases}
+\label{eq:mindlin-displacement}
+\end{equation}
+其中 $u_\alpha$ 为中面面内位移，$w$ 为横向挠度，$\varphi_\alpha$ 为法线纤维的转角，$i,j=1,2,3$，$\alpha,\beta=1,2$，采用爱因斯坦求和约定。在小变形假设下，线性应变张量为 $\varepsilon_{ij} = \frac{1}{2}(u_{i,j}+u_{j,i})$。
+
+面内应变分量（$\alpha,\beta=1,2$）为
+\begin{equation}
+\varepsilon_{\alpha\beta} = \frac{1}{2}(u_{\alpha,\beta}+u_{\beta,\alpha})
+= \frac{x_3}{2}(\varphi_{\alpha,\beta}+\varphi_{\beta,\alpha})
+\equiv x_3 \kappa_{\alpha\beta},
+\label{eq:inplane-strain}
+\end{equation}
+其中 $\kappa_{\alpha\beta} = \frac{1}{2}(\varphi_{\alpha,\beta}+\varphi_{\beta,\alpha})$ 为中面曲率。横向剪切应变（$\alpha=1,2$）为
+\begin{equation}
+\gamma_\alpha \equiv 2\varepsilon_{\alpha 3} = \bar{u}_{\alpha,3}+\bar{u}_{3,\alpha}
+= w_{,\alpha} - \varphi_\alpha.
+\label{eq:transverse-shear-strain}
+\end{equation}
+
+假设板处于平面应力状态（$\sigma_{33}=0$），材料为各向同性线弹性。面内应力与应变关系为 $\sigma_{\alpha\beta}=C_{\alpha\beta\gamma\delta}\varepsilon_{\gamma\delta}$，四阶弹性张量为：
+\begin{equation}
+C_{\alpha\beta\gamma\delta} = \frac{E}{1-\nu^2}\left[\nu\delta_{\alpha\beta}\delta_{\gamma\delta} + \frac{1-\nu}{2}(\delta_{\alpha\gamma}\delta_{\beta\delta}+\delta_{\alpha\delta}\delta_{\beta\gamma})\right],
+\label{eq:elastic-tensor}
+\end{equation}
+其中 $E$ 为杨氏模量，$\nu$ 为泊松比。横向剪应力需引入剪力修正系数 $\kappa$，有
+\begin{equation}
+\sigma_{\alpha 3} = \kappa G \gamma_\alpha, \qquad G = \frac{E}{2(1+\nu)},
+\label{eq:shear-constitutive}
+\end{equation}
+$\kappa$ 通常取 $5/6$。
+
+\section{小结}
+

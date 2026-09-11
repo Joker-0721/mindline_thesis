@@ -1,5 +1,6 @@
 % 第三章：自由振动分析公式推导
 % 包含：混合离散动力学方程、能量方程、弱形式
+% [修订v1] 补 \label/\eqref 交叉引用；统一 \varphi（原 \psi）；质量子块改 m_{IJ}（原 M_{IJ}，与弯矩合力 M_{\alpha\beta} 撞符号）
 
 本章针对 Mindlin 中厚板的自由振动问题，基于第二章建立的运动学方程，推导混合离散格式下的动力学控制方程与广义特征值问题。首先推导板的动能变分与应变能变分，通过哈密顿原理建立自由振动的虚功方程；其次进行离散化，得到材料刚度矩阵与质量矩阵的各子块表达式；最后讨论混合离散格式的稳定性条件。
 
@@ -8,88 +9,109 @@
 考虑 Mindlin 中厚板的自由振动问题，求解目标为结构的固有频率 $\omega$ 和固有振型。自由振动对应的广义特征值问题为：
 \begin{equation}
 (\mathbf{K} - \omega^2 \mathbf{M})\mathbf{D} = \mathbf{0}
+\label{eq:vib-eigen}
 \end{equation}
-式中，$\mathbf{K}$ 为弹性刚度矩阵，$\mathbf{M}$ 为质量矩阵，$\mathbf{D}$ 为节点自由度向量。
+式中，$\mathbf{K}$ 为弹性刚度矩阵，$\mathbf{M}$ 为质量矩阵，$\mathbf{D}$ 为节点自由度向量，$\omega$ 为固有圆频率。式\eqref{eq:vib-eigen}即为后续离散化工作的求解目标。
 
 \section{振动分析能量方程}
 
-由第二章建立的 Mindlin 板位移场、应变-位移关系及材料本构可知，本章直接在此基础上进行动力分析。首先推导板的动能变分与应变能变分，再通过哈密顿原理建立自由振动的虚功方程。板的动能变分为：
+由式\eqref{eq:mindlin-displacement}给出的位移场、式\eqref{eq:inplane-strain}与式\eqref{eq:transverse-shear-strain}的应变-位移关系以及式\eqref{eq:shear-constitutive}的材料本构可知，本章在第二章的基础上进行动力分析，首先推导板的动能变分与应变能变分，再通过哈密顿原理建立自由振动的虚功方程。板的动能变分为：
 \begin{equation}
 \delta T = \int_V \rho \ddot{u}_i \delta u_i\, dV
+\label{eq:vib-kinetic-variation}
 \end{equation}
-将位移场代入，利用中面位置 $x_3=0$ 的对称性以及密度均匀假设，定义惯性系数
+将式\eqref{eq:mindlin-displacement}代入，利用中面位置 $x_3=0$ 的对称性以及密度均匀假设，定义惯性系数
 \begin{equation}
 I_0 = \int_{-h/2}^{h/2} \rho\, dx_3 = \rho h, \qquad I_2 = \int_{-h/2}^{h/2} \rho x_3^2\, dx_3 = \frac{\rho h^3}{12}
+\label{eq:inertia-coefficients}
 \end{equation}
-由于中面对称性，$\int_{-h/2}^{h/2} \rho x_3 dx_3 = 0$，可得动能变分的中面积分形式：
+式中，$I_0$ 为平动惯性系数，$I_2$ 为转动惯性系数，$h$ 为板厚。中面对称使 $\int_{-h/2}^{h/2} \rho x_3 dx_3 = 0$，可得动能变分的中面积分形式：
 \begin{equation}
-\delta T = \int_\Omega \left(I_0 \ddot{w}\,\delta w + I_2 \ddot{\psi}_\alpha \delta\psi_\alpha\right) d\Omega
+\delta T = \int_\Omega \left(I_0 \ddot{w}\,\delta w + I_2 \ddot{\varphi}_\alpha \delta\varphi_\alpha\right) d\Omega
+\label{eq:vib-kinetic-midplane}
 \end{equation}
+式中，$\Omega$ 为板的中面，$\ddot{w}$ 为横向加速度，$\ddot{\varphi}_\alpha$ 为法线转角加速度。
 
 板的应变能变分为：
 \begin{equation}
 \delta U = \int_V \sigma_{ij} \delta\varepsilon_{ij}\, dV
+\label{eq:vib-strain-variation}
 \end{equation}
 内虚功密度 $\sigma_{ij}\delta\varepsilon_{ij}$ 包含面内分量与横向分量（$\sigma_{33}=0$ 不计）：
 \begin{equation}
 \sigma_{ij}\delta\varepsilon_{ij} = \sigma_{\alpha\beta}\delta\varepsilon_{\alpha\beta} + 2\sigma_{\alpha 3}\delta\varepsilon_{\alpha 3}
+\label{eq:virtual-work-density}
 \end{equation}
 利用 Mindlin 位移场对应的应变变分 $\delta\varepsilon_{\alpha\beta} = x_3\delta\kappa_{\alpha\beta}$，$\delta\varepsilon_{\alpha 3} = \frac{1}{2}\delta\gamma_\alpha$，代入并对厚度积分，定义弯矩合力与剪力合力
 \begin{equation}
 M_{\alpha\beta} \equiv \int_{-h/2}^{h/2} x_3 \sigma_{\alpha\beta}\, dx_3 = \frac{h^3}{12} C_{\alpha\beta\gamma\delta}\kappa_{\gamma\delta}, \qquad Q_\alpha \equiv \int_{-h/2}^{h/2} \sigma_{\alpha 3}\, dx_3 = \kappa G h \gamma_\alpha
+\label{eq:stress-resultants}
 \end{equation}
-由此，内虚功可写为
+式中，$M_{\alpha\beta}$ 为弯矩合力，$Q_\alpha$ 为剪力合力，$C_{\alpha\beta\gamma\delta}$ 为式\eqref{eq:elastic-tensor}定义的四阶弹性张量，$\kappa$ 为剪切修正系数。将式\eqref{eq:stress-resultants}代入式\eqref{eq:vib-strain-variation}并对厚度积分，内虚功可写为
 \begin{equation}
 \delta U = \int_\Omega \left(M_{\alpha\beta}\delta\kappa_{\alpha\beta} + Q_\alpha \delta\gamma_\alpha\right) d\Omega
+\label{eq:vib-internal-virtual-work}
 \end{equation}
 
 根据哈密顿原理，系统在任意时间区间 $[t_1, t_2]$ 内的动能变分与应变能变分满足：
 \begin{equation}
 \int_{t_1}^{t_2} (\delta T - \delta U)\, dt = 0,
+\label{eq:hamilton-principle}
 \end{equation}
 对任意虚位移 $\delta u_i$，可得弹性动力学的虚功方程：
 \begin{equation}
 \int_V (\sigma_{ij}\delta\varepsilon_{ij} + \rho \ddot{u}_i \delta u_i)\, dV = 0.
+\label{eq:vib-virtual-work}
 \end{equation}
-板的体积积分可分解为中面积分与厚度积分：$\int_V dV = \int_\Omega \int_{-h/2}^{h/2} dx_3\, d\Omega$，其中 $\Omega$ 为板的中面。将内虚功与惯性项代入，得到 Mindlin 板自由振动的虚功方程：
+板的体积积分可分解为中面积分与厚度积分：$\int_V dV = \int_\Omega \int_{-h/2}^{h/2} dx_3\, d\Omega$，其中 $\Omega$ 为板的中面。将式\eqref{eq:vib-internal-virtual-work}与式\eqref{eq:vib-kinetic-midplane}代入式\eqref{eq:vib-virtual-work}，得到 Mindlin 板自由振动的虚功方程：
 \begin{equation}
-\int_\Omega \left[M_{\alpha\beta}\delta\kappa_{\alpha\beta} + Q_\alpha \delta\gamma_\alpha - I_0 \ddot{w}\,\delta w - I_2 \ddot{\psi}_\alpha \delta \psi_\alpha\right] d\Omega = 0.
+\int_\Omega \left[M_{\alpha\beta}\delta\kappa_{\alpha\beta} + Q_\alpha \delta\gamma_\alpha - I_0 \ddot{w}\,\delta w - I_2 \ddot{\varphi}_\alpha \delta \varphi_\alpha\right] d\Omega = 0.
+\label{eq:vib-plate-virtual-work}
 \end{equation}
+式中，前两项为弹性内力虚功（弯曲与剪切），后两项为惯性力虚功。式\eqref{eq:vib-plate-virtual-work}即为自由振动问题离散化的出发点。
 
 \section{弱形式}
 
-对上述虚功方程各变量取变分并令其为零，将离散场代入后得到广义特征值方程。位移场和转角场的形函数插值为：
+对式\eqref{eq:vib-plate-virtual-work}各变量取变分并令其为零，将离散场代入后得到广义特征值方程。位移场和转角场的形函数插值为：
 \begin{equation}
 w(\mathbf{x}) = N_I w_I, \qquad \varphi_\alpha(\mathbf{x}) = N_I \varphi_{\alpha I}
+\label{eq:shape-function-interpolation}
 \end{equation}
-对空间坐标求偏导，微分算子直接作用在形函数上：$w_{,\alpha} = N_{I,\alpha}w_I$，$\varphi_{\alpha,\beta} = N_{I,\beta}\varphi_\alpha$。虚位移做同阶离散近似。
+式中，$N_I$ 为节点 $I$ 的形函数，$w_I$ 为节点横向挠度，$\varphi_{\alpha I}$ 为节点法线转角。对空间坐标求偏导，微分算子直接作用在形函数上：$w_{,\alpha} = N_{I,\alpha}w_I$，$\varphi_{\alpha,\beta} = N_{I,\beta}\varphi_{\alpha I}$。虚位移做同阶离散近似。
 
-材料刚度矩阵各子块为
+将式\eqref{eq:shape-function-interpolation}代入式\eqref{eq:vib-internal-virtual-work}，材料刚度矩阵各子块为
 \begin{equation}
 K_{IJ}^{ww} = \int_\Omega \kappa G h\, N_{I,\alpha} N_{J,\alpha}\, d\Omega, \qquad K_{I,J\gamma}^{w\varphi} = -\int_\Omega \kappa G h\, N_{I,\gamma} N_J\, d\Omega
+\label{eq:stiffness-ww-wphi}
 \end{equation}
 \begin{equation}
 K_{I\alpha,J\gamma}^{\varphi\varphi} = \int_\Omega \left(N_{I,\beta} D_{\alpha\beta\gamma\eta} N_{J,\eta} + \kappa G h\, N_I N_J \delta_{\alpha\gamma}\right) d\Omega
+\label{eq:stiffness-phiphi}
 \end{equation}
+式中，$K_{IJ}^{ww}$ 为横向挠度对应的剪切刚度子块，$K_{I,J\gamma}^{w\varphi}$ 为挠度与转角耦合的刚度子块，$K_{I\alpha,J\gamma}^{\varphi\varphi}$ 为转角对应的弯曲与剪切刚度子块，$D_{\alpha\beta\gamma\eta} = \frac{h^3}{12}C_{\alpha\beta\gamma\eta}$ 为弯曲刚度张量，$\delta_{\alpha\gamma}$ 为 Kronecker 符号。
 
 质量矩阵展开后的对称矩阵形式为
 \begin{equation}
 \mathbf{M} = \begin{bmatrix}
-M^{ww} & \mathbf{0} & \mathbf{0} \\
-\mathbf{0} & M^{\varphi_1\varphi_1} & \mathbf{0} \\
-\mathbf{0} & \mathbf{0} & M^{\varphi_2\varphi_2}
+\mathbf{M}^{ww} & \mathbf{0} & \mathbf{0} \\
+\mathbf{0} & \mathbf{M}^{\varphi_1\varphi_1} & \mathbf{0} \\
+\mathbf{0} & \mathbf{0} & \mathbf{M}^{\varphi_2\varphi_2}
 \end{bmatrix}
+\label{eq:mass-matrix-block}
 \end{equation}
 其中横向挠度对应的质量子块为：
 \begin{equation}
-M_{IJ}^{ww} = \int_\Omega I_0 N_I N_J\, d\Omega = \int_\Omega \rho h\, N_I N_J\, d\Omega
+m_{IJ}^{ww} = \int_\Omega I_0 N_I N_J\, d\Omega = \int_\Omega \rho h\, N_I N_J\, d\Omega
+\label{eq:mass-ww}
 \end{equation}
 转角自由度对应的质量子块为：
 \begin{equation}
-M_{I\alpha,J\beta}^{\varphi\varphi} = \int_\Omega I_2 \delta_{\alpha\beta} N_I N_J\, d\Omega = \int_\Omega \frac{\rho h^3}{12} \delta_{\alpha\beta} N_I N_J\, d\Omega
+m_{I\alpha,J\beta}^{\varphi\varphi} = \int_\Omega I_2 \delta_{\alpha\beta} N_I N_J\, d\Omega = \int_\Omega \frac{\rho h^3}{12} \delta_{\alpha\beta} N_I N_J\, d\Omega
+\label{eq:mass-phiphi}
 \end{equation}
+式中，$m_{IJ}^{ww}$ 为横向平动质量子块，$m_{I\alpha,J\beta}^{\varphi\varphi}$ 为转动质量子块，$\delta_{\alpha\beta}$ 为 Kronecker 符号。中面面内位移与横向挠度不耦合，质量矩阵呈块对角形式。
 
-由于线性问题中面内与弯曲不耦合，全局特征值方程呈现块对角结构：
+线性问题中面内与弯曲不耦合，全局特征值方程呈块对角结构：
 \begin{equation}
 \begin{bmatrix}
 \mathbf{K}_{ww} & \mathbf{K}_{w\varphi} \\
@@ -108,7 +130,8 @@ M_{I\alpha,J\beta}^{\varphi\varphi} = \int_\Omega I_2 \delta_{\alpha\beta} N_I N
 \mathbf{W} \\
 \boldsymbol{\Psi}
 \end{bmatrix}
+\label{eq:vib-global-eigen}
 \end{equation}
-此即 Mindlin 板自由振动的全局离散特征值方程。求解广义特征值问题 $(\mathbf{K} - \omega^2\mathbf{M})\mathbf{D} = \mathbf{0}$，可得到自然频率 $\omega$ 和对应模态。
+式中，$\mathbf{W}$ 为节点挠度向量，$\boldsymbol{\Psi}$ 为节点转角向量，$\mathbf{K}_{ww}$、$\mathbf{K}_{w\varphi}$、$\mathbf{K}_{\varphi\varphi}$ 分别为由式\eqref{eq:stiffness-ww-wphi}与式\eqref{eq:stiffness-phiphi}组集而成的全局刚度子矩阵。此即 Mindlin 板自由振动的全局离散特征值方程。求解广义特征值问题式\eqref{eq:vib-eigen}，可得到自然频率 $\omega$ 和对应模态。
 
-格式稳定性方面，振动问题中，质量矩阵 $\mathbf{M}$ 为对称正定。为保证自由振动特征值问题的适定性，混合离散格式需满足 LBB 稳定性条件。本文采用的剪切应力场插值阶数经约束比分析验证，可保证 inf-sup 常数有正下界，从而在薄板极限下避免剪切自锁并维持刚度矩阵的正定性。当板厚趋近于零时，最低阶频率收敛于 Kirchhoff 薄板理论的解析解。
+振动问题中质量矩阵 $\mathbf{M}$ 为对称正定，自由振动特征值问题的适定性要求混合离散格式满足 LBB 稳定性条件。本文采用的剪切应力场插值阶数经约束比分析验证，可保证 inf-sup 常数有正下界，从而在薄板极限下避免剪切自锁并维持刚度矩阵的正定性。当板厚趋近于零时，最低阶频率收敛于 Kirchhoff 薄板理论的解析解。

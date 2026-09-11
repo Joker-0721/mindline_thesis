@@ -1,11 +1,20 @@
 % 方板屈曲数值算例
 % 包含：CCCC, SSSS, CSCS, FSCS, FSSS, SCSC 六种边界条件
+% [修订v1] 1) 修正事实性错误：v01–v12 为第 1–12 阶屈曲模态编号，不是厚跨比；
+%          2) 补齐图表叙述（参数表、对比表、收敛图的读图与结论）；
+%          3) 繁体「模態」→「模态」；补 \label 与 \cite；
+%          4) 所有算例数据与相对误差均取自 date\ 目录收敛序列末值（ndiv=35），核验脚本见
+%             D:\Joker\deepseek_harness\scripts\data_check\report_convergence.py，报告见 D:\Joker\refs\屈曲收敛数据核验.md
+% [待办-数据] 表 CH4_compare_table 的「FEM缩减积分」列与「FEM」列在各边界下末值完全相同（序列逐值一致），
+%             疑为同一份数据重复导出，暂不足以支撑「缩减积分」作为独立方法的对比结论，需重算或删列。
 
 \section{数值算例}
 
-针对单轴均匀压缩载荷，系统评估混合离散格式在极薄极限下的临界载荷计算能力。以下给出六种边界条件下、不同厚跨比（v01–v12）的屈曲临界荷载系数对比图。
+针对单轴均匀压缩载荷，系统评估混合离散格式在极薄极限下的临界载荷计算能力。本节首先给出方板计算模型、材料与几何参数以及验证基准；其次在六种边界条件下对比各方法的临界荷载系数及其网格收敛性；最后给出第 1 至第 12 阶屈曲模态下各方法的对比图形。
 
-计算模型如图所示，方板求解域为 $\Omega = [-0.5, 0.5] \times [-0.5, 0.5]$，采用均匀节点离散。四条边分别编号为 1（底边）、2（右边）、3（顶边）、4（左边），通过组合不同的边界约束条件（固支 C、简支 S、自由 F）构成六种典型工况。边界箭头表示各边的位移约束方向。
+\subsection{计算模型与参数}
+
+方板求解域为 $\Omega = [-0.5, 0.5] \times [-0.5, 0.5]$，采用均匀节点离散。四条边分别编号为 1（底边）、2（右边）、3（顶边）、4（左边），通过组合不同的边界约束条件（固支 C、简支 S、自由 F）构成六种典型工况：CCCC、SSSS、CSCS、SCSC、FSCS 与 FSSS。图\ref{CH4_plate_model} 给出方板计算模型与边界条件示意图，图中边界箭头表示各边的位移约束方向。
 
 \begin{figure}[H]
     \centering
@@ -14,7 +23,7 @@
     \label{CH4_plate_model}
 \end{figure}
 
-本文数值算例采用无量纲材料参数，具体取值如表所示。方板边长 $a=b=1.0$，板厚 $h=10^{-2}$，厚跨比 $h/a=1/100$，属于薄板范畴。剪切修正系数取 Mindlin 板理论常用值 $\kappa=5/6$。
+本文数值算例采用无量纲材料参数，具体取值列于表\ref{CH4_params} 中。方板边长 $a=b=1.0$，板厚 $h=10^{-2}$，厚跨比 $h/a=1/100$，属于薄板范畴。剪切修正系数取 Mindlin 板理论常用值 $\kappa=5/6$。
 
 \begin{table}[H]
 \centering
@@ -37,24 +46,9 @@
 \end{tabular}
 \end{table}
 
-屈曲临界荷载系数的验证基准基于 Kirchhoff 薄板理论。由于本算例厚跨比 $h/a=1/100$，属于薄板范畴，Mindlin 理论的计算结果应收敛于 Kirchhoff 理论的解析解或经典参考解。
+表\ref{CH4_params} 中，弹性模量、泊松比与密度取无量纲单位；预加应力 $\sigma_{11}=1.0$ 对应沿 $x$ 方向的单轴均匀压缩，$\sigma_{22}=\sigma_{12}=0$；弯曲刚度 $D^b = Eh^3/[12(1-\nu^2)]$ 与剪切刚度 $D^s = \kappa Gh$ 由几何与材料参数直接确定。表中剪切刚度比弯曲刚度高约 4 个数量级，薄板极限下横向剪切项成为约束条件的主要来源，剪切自锁即出现在该参数区间。
 
-对于四边简支（SSSS）方板，采用 Navier 双三角级数法可获得精确闭合解。设板沿 $x$ 方向承受单轴均布压力 $N_x$，屈曲控制方程为：
-\begin{equation}
-D\nabla^4 w + N_x \frac{\partial^2 w}{\partial x^2} = 0,
-\end{equation}
-其中弯曲刚度 $D = Eh^3/[12(1-\nu^2)]$。取满足四边简支边界条件（$w=0,\ M_n=0$）的试函数：
-\begin{equation}
-w(x,y) = \sum_{m=1}^{\infty}\sum_{n=1}^{\infty} A_{mn} \sin\frac{m\pi x}{a} \sin\frac{n\pi y}{b},
-\end{equation}
-代入控制方程可得方板最低阶（$m=n=1$）屈曲临界荷载系数：
-\begin{equation}
-k_{\mathrm{SSSS}} = \frac{(m^2+n^2)^2}{m^2} = 4.000.
-\end{equation}
-
-对于四边固支（CCCC）、混合边界（CSCS、SCSC）及含自由边（FSCS、FSSS）的方板，由于边界条件无法用简单三角级数自动满足，不存在精确闭合解，需通过 Levy 单三角级数法或 Rayleigh-Ritz 能量法求解超越方程获得数值参考解。本文采用 Timoshenko 与 Gere[\cite{timoshenko1961}] 及 Bui 等人[\cite{bui2011}] 给出的经典参考值作为验证基准，各边界条件的最低阶屈曲系数汇总于表中。
-
-数值算例采用结构化网格离散，四边形单元（Quad4）网格规模为 $25\times25$ 至 $35\times35$，三角形单元（Tri3）网格规模对应约 $392$ 至 $800$ 个单元。典型网格如图所示。
+数值算例采用结构化网格离散，四边形单元（Quad4）网格规模为 $25\times25$ 至 $35\times35$，三角形单元（Tri3）网格规模对应约 $392$ 至 $800$ 个单元。典型网格如图\ref{CH4_mesh} 所示。
 
 \begin{figure}[H]
     \centering
@@ -65,13 +59,35 @@ k_{\mathrm{SSSS}} = \frac{(m^2+n^2)^2}{m^2} = 4.000.
     \label{CH4_mesh}
 \end{figure}
 
+\subsection{验证基准与收敛性分析}
+
+屈曲临界荷载系数的验证基准基于 Kirchhoff 薄板理论。由于本算例厚跨比 $h/a=1/100$，属于薄板范畴，Mindlin 理论的计算结果应收敛于 Kirchhoff 理论的解析解或经典参考解。
+
+对于四边简支（SSSS）方板，采用 Navier 双三角级数法可获得精确闭合解。设板沿 $x$ 方向承受单轴均布压力 $N_x$，屈曲控制方程为：
+\begin{equation}
+D\nabla^4 w + N_x \frac{\partial^2 w}{\partial x^2} = 0,
+\label{eq:buck-kirchhoff-control}
+\end{equation}
+其中弯曲刚度 $D = Eh^3/[12(1-\nu^2)]$。取满足四边简支边界条件（$w=0,\ M_n=0$）的试函数：
+\begin{equation}
+w(x,y) = \sum_{m=1}^{\infty}\sum_{n=1}^{\infty} A_{mn} \sin\frac{m\pi x}{a} \sin\frac{n\pi y}{b},
+\label{eq:navier-mode-shape}
+\end{equation}
+式中，$A_{mn}$ 为待定幅值系数，$m$、$n$ 分别为 $x$ 与 $y$ 方向的半波数。将式\eqref{eq:navier-mode-shape}代入式\eqref{eq:buck-kirchhoff-control}，可得方板最低阶（$m=n=1$）屈曲临界荷载系数：
+\begin{equation}
+k_{\mathrm{SSSS}} = \frac{(m^2+n^2)^2}{m^2} = 4.000.
+\label{eq:ssss-buckling-coefficient}
+\end{equation}
+
+对于四边固支（CCCC）、混合边界（CSCS、SCSC）及含自由边（FSCS、FSSS）的方板，由于边界条件无法用简单三角级数自动满足，不存在精确闭合解，需通过 Levy 单三角级数法或 Rayleigh-Ritz 能量法求解超越方程获得数值参考解。本文采用 Timoshenko 与 Gere\cite{timoshenko1961} 及 Bui 等人\cite{bui2011} 给出的经典参考值作为验证基准，各边界条件的最低阶屈曲系数汇总于表\ref{CH4_compare_table}。
+
 \begin{table}[H]
 \centering
 \caption{单轴受压方板屈曲临界荷载系数对比（三角形 Tri3 网格，$35\times35$，$t/b=0.01$）}
 \label{CH4_compare_table}
 \begin{tabular}{cccccccc}
 \hline
-边界条件 & 标准解$^{[1]}$ & 文献[Bui] & MF & MF2 & FEM & FEM缩减积分 & FEM三变量 \\
+边界条件 & 标准解\cite{timoshenko1961} & 文献\cite{bui2011} & MF & MF2 & FEM & FEM缩减积分 & FEM三变量 \\
 \hline
 CCCC & 10.0700 & 10.1080 & 10.0568 & 10.1040 & 8.2847 & 8.2847 & 10.0842 \\
 SSSS & 4.0000 & 4.0050 & 3.9921 & 3.9987 & 3.5966 & 3.5966 & 4.0081 \\
@@ -83,6 +99,10 @@ FSSS & 1.4400 & 1.4390 & 1.3993 & 1.4019 & 1.3224 & 1.3224 & 1.4032 \\
 \end{tabular}
 \end{table}
 
+从表中可以看出，六种边界条件下 MF 与 FEM 三变量混合元的屈曲临界荷载系数均接近标准解，而常规 FEM 的结果系统性偏低，且偏低幅度随边界约束增强而增大。四边固支工况下，标准解为 10.0700，MF 为 10.0568，FEM 三变量混合元为 10.0842，三者差值均在 0.02 以内；常规 FEM 仅为 8.2847，比标准解低 1.7853。四边简支工况的规律相同，MF 与 FEM 三变量混合元分别为 3.9921 与 4.0081，常规 FEM 为 3.5966，比标准解 4.0000 低 0.4034。含自由边的 FSCS 与 FSSS 工况下，常规 FEM 与 MF 的差值由四边固支的 1.7721 降至 0.1027 与 0.0769。自由边工况下板的屈曲模态以局部变形为主，弯曲与剪切的耦合程度低于全约束工况，剪切自锁的影响随之减弱。
+
+在表\ref{CH4_compare_table} 的收敛序列基础上，图\ref{CH4_convergence} 给出 CCCC 与 SSSS 两种典型工况下各方法的误差随单元尺寸的变化。图中横坐标为 $\log_{10}(h)$，$h=1/(n-1)$ 为单元尺寸；纵坐标为 $\log_{10}(|K-K_{\mathrm{exact}}|/K_{\mathrm{exact}})$，误差值越往下表示结果越精确。图中第二个 MF 变体标注为 MF1，与表\ref{CH4_compare_table} 中的 MF2 为同一格式。
+
 \begin{figure}[H]
     \centering
     \begin{tabular}{cc}
@@ -90,224 +110,256 @@ FSSS & 1.4400 & 1.4390 & 1.3993 & 1.4019 & 1.3224 & 1.3224 & 1.4032 \\
     \includegraphics[width=0.48\textwidth]{convergence/conv_tri3_SSSS.png} \\
     (a) 四边固支 CCCC & (b) 四边简支 SSSS
     \end{tabular}
-    \caption{三角形（Tri3）网格下各方法屈曲临界荷载系数的对数相对误差收敛曲线}
+    \caption{三角形（Tri3）网格下各方法屈曲临界荷载系数的对数误差收敛曲线}
     \label{CH4_convergence}
 \end{figure}
 
+从图中可以看出，MF 的误差曲线随单元尺寸减小单调下降，在双对数坐标下的斜率约为 $1.55$，四边简支工况的对应斜率约为 $1.26$，误差随网格加密稳定收敛。常规 FEM 的误差曲线呈相反趋势：网格由 $25\times25$ 加密至 $35\times35$ 时，其四边固支结果由 8.5316 下降至 8.2847，与标准解的差值由 1.5384 扩大至 1.7853，加密网格反而使结果进一步偏离薄板理论的解析解。常规 FEM 的误差不来自网格离散，而来自剪切约束项在薄板极限下的数值刚化，加密网格无法消除。FEM 三变量混合元的末值与 MF 相当，但其误差曲线在相邻网格间呈奇偶交替波动，波动幅度约为 0.04，尚不呈现单调收敛特征。
 
-\subsection{方板边界条件屈曲分析}
+% [待办-数据] 上述收敛率由 date\ 目录序列拟合得到（斜率按 log10(err) 对 log10(h) 线性回归）。
+% FSCS/FSSS 工况下 MF 的误差随网格加密基本不变（拟合斜率约 0.07），提示该两工况的参考值定义
+% 或荷载归一化方式与其余工况不一致，需在定稿前核对基准来源。
 
-计算四边固支方板在不同厚跨比下的屈曲载荷系数，展示在极薄极限下完全不锁死的数值优越性。
+\subsection{屈曲模态对比}
+
+为考察各方法对高阶模态的解析能力，图\ref{CH4_buckling_CCCC_a} 至图\ref{CH4_buckling_SCSC_b} 给出六种边界条件下第 1 至第 12 阶屈曲模态的临界荷载系数对比结果。每幅图包含 6 组面板，每组对应一个屈曲模态阶次，组内自左至右依次为标准解、MF、MF1、FEM、FEM 缩减积分与 FEM 三变量混合元；方法标签仅标注于第 1 阶与第 7 阶模态所在的面板组中，图中 $v_{01}$ 至 $v_{12}$ 依次对应第 1 至第 12 阶屈曲模态。
+
+四边固支方板的边界约束最强，其屈曲临界荷载系数在六种工况中最高，结果如图\ref{CH4_buckling_CCCC_a} 与图\ref{CH4_buckling_CCCC_b} 所示。
 
 \begin{figure}[H]
     \centering
-    模態  1\\[1mm]
+    \textbf{(a) 第 1 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CCCC_v01_1x6.png}\\[3mm]
-    模態  2\\[1mm]
+    \textbf{(b) 第 2 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CCCC_v02_1x6.png}\\[3mm]
-    模態  3\\[1mm]
+    \textbf{(c) 第 3 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CCCC_v03_1x6.png}\\[3mm]
-    模態  4\\[1mm]
+    \textbf{(d) 第 4 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CCCC_v04_1x6.png}\\[3mm]
-    模態  5\\[1mm]
+    \textbf{(e) 第 5 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CCCC_v05_1x6.png}\\[3mm]
-    模態  6\\[1mm]
+    \textbf{(f) 第 6 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CCCC_v06_1x6.png}\\[3mm]
-    \caption{四边固支（CCCC）方板屈曲临界荷载系数对比（v01–v12）（模态1–6）}
+    \caption{四边固支（CCCC）方板第 1 至第 6 阶屈曲模态临界荷载系数对比}
     \label{CH4_buckling_CCCC_a}
 \end{figure}
 \begin{figure}[H]
     \centering
-    模態  7\\[1mm]
+    \textbf{(a) 第 7 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CCCC_v07_1x6.png}\\[3mm]
-    模態  8\\[1mm]
+    \textbf{(b) 第 8 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CCCC_v08_1x6.png}\\[3mm]
-    模態  9\\[1mm]
+    \textbf{(c) 第 9 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CCCC_v09_1x6.png}\\[3mm]
-    模態 10\\[1mm]
+    \textbf{(d) 第 10 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CCCC_v10_1x6.png}\\[3mm]
-    模態 11\\[1mm]
+    \textbf{(e) 第 11 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CCCC_v11_1x6.png}\\[3mm]
-    模態 12\\[1mm]
+    \textbf{(f) 第 12 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CCCC_v12_1x6.png}\\[3mm]
-    \caption{四边固支（CCCC）方板屈曲临界荷载系数对比（v01–v12）（模态7–12）}
+    \caption{四边固支（CCCC）方板第 7 至第 12 阶屈曲模态临界荷载系数对比}
     \label{CH4_buckling_CCCC_b}
 \end{figure}
 
-分析四边简支方板的屈曲模态切换特征，探讨最优约束比的收敛规律。
+% TODO[图像核对] 补充本段观察句：第 1 阶面板中 MF、MF1 与 FEM 三变量混合元的振型是否与标准解一致，
+% 常规 FEM 面板的振型相对标准解的偏差表现（波数、节线位置、幅值分布），以及该偏差随模态阶次升高的变化趋势。
+
+四边简支方板的模态为式\eqref{eq:navier-mode-shape}的双三角级数形式，可直接作为振型对比的基准，结果如图\ref{CH4_buckling_SSSS_a} 与图\ref{CH4_buckling_SSSS_b} 所示。
 
 \begin{figure}[H]
     \centering
-    模態  1\\[1mm]
+    \textbf{(a) 第 1 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SSSS_v01_1x6.png}\\[3mm]
-    模態  2\\[1mm]
+    \textbf{(b) 第 2 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SSSS_v02_1x6.png}\\[3mm]
-    模態  3\\[1mm]
+    \textbf{(c) 第 3 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SSSS_v03_1x6.png}\\[3mm]
-    模態  4\\[1mm]
+    \textbf{(d) 第 4 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SSSS_v04_1x6.png}\\[3mm]
-    模態  5\\[1mm]
+    \textbf{(e) 第 5 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SSSS_v05_1x6.png}\\[3mm]
-    模態  6\\[1mm]
+    \textbf{(f) 第 6 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SSSS_v06_1x6.png}\\[3mm]
-    \caption{四边简支（SSSS）方板屈曲临界荷载系数对比（v01–v12）（模态1–6）}
+    \caption{四边简支（SSSS）方板第 1 至第 6 阶屈曲模态临界荷载系数对比}
     \label{CH4_buckling_SSSS_a}
 \end{figure}
 \begin{figure}[H]
     \centering
-    模態  7\\[1mm]
+    \textbf{(a) 第 7 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SSSS_v07_1x6.png}\\[3mm]
-    模態  8\\[1mm]
+    \textbf{(b) 第 8 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SSSS_v08_1x6.png}\\[3mm]
-    模態  9\\[1mm]
+    \textbf{(c) 第 9 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SSSS_v09_1x6.png}\\[3mm]
-    模態 10\\[1mm]
+    \textbf{(d) 第 10 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SSSS_v10_1x6.png}\\[3mm]
-    模態 11\\[1mm]
+    \textbf{(e) 第 11 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SSSS_v11_1x6.png}\\[3mm]
-    模態 12\\[1mm]
+    \textbf{(f) 第 12 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SSSS_v12_1x6.png}\\[3mm]
-    \caption{四边简支（SSSS）方板屈曲临界荷载系数对比（v01–v12）（模态7–12）}
+    \caption{四边简支（SSSS）方板第 7 至第 12 阶屈曲模态临界荷载系数对比}
     \label{CH4_buckling_SSSS_b}
 \end{figure}
 
+% TODO[图像核对] 补充本段观察句：四边简支条件下模态重根现象（同一阶次出现成对相等或接近的临界荷载系数）
+% 在各方法面板中的表现，以及 MF 与 FEM 三变量混合元对重根模态的分辨能力。
+
+固支-简支交替（CSCS）工况的两组对边约束不同，其屈曲临界荷载系数介于四边固支与四边简支之间，结果如图\ref{CH4_buckling_CSCS_a} 与图\ref{CH4_buckling_CSCS_b} 所示。
+
 \begin{figure}[H]
     \centering
-    模態  1\\[1mm]
+    \textbf{(a) 第 1 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CSCS_v01_1x6.png}\\[3mm]
-    模態  2\\[1mm]
+    \textbf{(b) 第 2 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CSCS_v02_1x6.png}\\[3mm]
-    模態  3\\[1mm]
+    \textbf{(c) 第 3 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CSCS_v03_1x6.png}\\[3mm]
-    模態  4\\[1mm]
+    \textbf{(d) 第 4 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CSCS_v04_1x6.png}\\[3mm]
-    模態  5\\[1mm]
+    \textbf{(e) 第 5 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CSCS_v05_1x6.png}\\[3mm]
-    模態  6\\[1mm]
+    \textbf{(f) 第 6 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CSCS_v06_1x6.png}\\[3mm]
-    \caption{固支-简支交替（CSCS）方板屈曲临界荷载系数对比（v01–v12）（模态1–6）}
+    \caption{固支-简支交替（CSCS）方板第 1 至第 6 阶屈曲模态临界荷载系数对比}
     \label{CH4_buckling_CSCS_a}
 \end{figure}
 \begin{figure}[H]
     \centering
-    模態  7\\[1mm]
+    \textbf{(a) 第 7 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CSCS_v07_1x6.png}\\[3mm]
-    模態  8\\[1mm]
+    \textbf{(b) 第 8 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CSCS_v08_1x6.png}\\[3mm]
-    模態  9\\[1mm]
+    \textbf{(c) 第 9 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CSCS_v09_1x6.png}\\[3mm]
-    模態 10\\[1mm]
+    \textbf{(d) 第 10 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CSCS_v10_1x6.png}\\[3mm]
-    模態 11\\[1mm]
+    \textbf{(e) 第 11 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CSCS_v11_1x6.png}\\[3mm]
-    模態 12\\[1mm]
+    \textbf{(f) 第 12 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/CSCS_v12_1x6.png}\\[3mm]
-    \caption{固支-简支交替（CSCS）方板屈曲临界荷载系数对比（v01–v12）（模态7–12）}
+    \caption{固支-简支交替（CSCS）方板第 7 至第 12 阶屈曲模态临界荷载系数对比}
     \label{CH4_buckling_CSCS_b}
 \end{figure}
 
+% TODO[图像核对] 补充本段观察句：CSCS 工况下常规 FEM 面板相对标准解的偏差在低阶与高阶模态间是否变化，
+% 以及 MF 面板对混合边界引起的模态局部化现象的再现程度。
+
+自由-简支-固支-简支（FSCS）工况含一个自由边，边界约束弱于四边约束工况，结果如图\ref{CH4_buckling_FSCS_a} 与图\ref{CH4_buckling_FSCS_b} 所示。
+
 \begin{figure}[H]
     \centering
-    模態  1\\[1mm]
+    \textbf{(a) 第 1 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSCS_v01_1x6.png}\\[3mm]
-    模態  2\\[1mm]
+    \textbf{(b) 第 2 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSCS_v02_1x6.png}\\[3mm]
-    模態  3\\[1mm]
+    \textbf{(c) 第 3 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSCS_v03_1x6.png}\\[3mm]
-    模態  4\\[1mm]
+    \textbf{(d) 第 4 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSCS_v04_1x6.png}\\[3mm]
-    模態  5\\[1mm]
+    \textbf{(e) 第 5 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSCS_v05_1x6.png}\\[3mm]
-    模態  6\\[1mm]
+    \textbf{(f) 第 6 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSCS_v06_1x6.png}\\[3mm]
-    \caption{自由-简支-固支-简支（FSCS）方板屈曲临界荷载系数对比（v01–v12）（模态1–6）}
+    \caption{自由-简支-固支-简支（FSCS）方板第 1 至第 6 阶屈曲模态临界荷载系数对比}
     \label{CH4_buckling_FSCS_a}
 \end{figure}
 \begin{figure}[H]
     \centering
-    模態  7\\[1mm]
+    \textbf{(a) 第 7 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSCS_v07_1x6.png}\\[3mm]
-    模態  8\\[1mm]
+    \textbf{(b) 第 8 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSCS_v08_1x6.png}\\[3mm]
-    模態  9\\[1mm]
+    \textbf{(c) 第 9 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSCS_v09_1x6.png}\\[3mm]
-    模態 10\\[1mm]
+    \textbf{(d) 第 10 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSCS_v10_1x6.png}\\[3mm]
-    模態 11\\[1mm]
+    \textbf{(e) 第 11 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSCS_v11_1x6.png}\\[3mm]
-    模態 12\\[1mm]
+    \textbf{(f) 第 12 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSCS_v12_1x6.png}\\[3mm]
-    \caption{自由-简支-固支-简支（FSCS）方板屈曲临界荷载系数对比（v01–v12）（模态7–12）}
+    \caption{自由-简支-固支-简支（FSCS）方板第 7 至第 12 阶屈曲模态临界荷载系数对比}
     \label{CH4_buckling_FSCS_b}
 \end{figure}
 
+% TODO[图像核对] 补充本段观察句：自由边工况下标准解模式（标准解面板的振型）与其他方法面板的一致性，
+% 以及 MF 与 FEM 在自由边附近的挠度分布差异。
+
+自由-简支-简支-简支（FSSS）工况含一个自由边，其屈曲临界荷载系数在六种工况中最低，结果如图\ref{CH4_buckling_FSSS_a} 与图\ref{CH4_buckling_FSSS_b} 所示。
+
 \begin{figure}[H]
     \centering
-    模態  1\\[1mm]
+    \textbf{(a) 第 1 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSSS_v01_1x6.png}\\[3mm]
-    模態  2\\[1mm]
+    \textbf{(b) 第 2 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSSS_v02_1x6.png}\\[3mm]
-    模態  3\\[1mm]
+    \textbf{(c) 第 3 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSSS_v03_1x6.png}\\[3mm]
-    模態  4\\[1mm]
+    \textbf{(d) 第 4 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSSS_v04_1x6.png}\\[3mm]
-    模態  5\\[1mm]
+    \textbf{(e) 第 5 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSSS_v05_1x6.png}\\[3mm]
-    模態  6\\[1mm]
+    \textbf{(f) 第 6 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSSS_v06_1x6.png}\\[3mm]
-    \caption{自由-简支-简支-简支（FSSS）方板屈曲临界荷载系数对比（v01–v12）（模态1–6）}
+    \caption{自由-简支-简支-简支（FSSS）方板第 1 至第 6 阶屈曲模态临界荷载系数对比}
     \label{CH4_buckling_FSSS_a}
 \end{figure}
 \begin{figure}[H]
     \centering
-    模態  7\\[1mm]
+    \textbf{(a) 第 7 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSSS_v07_1x6.png}\\[3mm]
-    模態  8\\[1mm]
+    \textbf{(b) 第 8 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSSS_v08_1x6.png}\\[3mm]
-    模態  9\\[1mm]
+    \textbf{(c) 第 9 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSSS_v09_1x6.png}\\[3mm]
-    模態 10\\[1mm]
+    \textbf{(d) 第 10 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSSS_v10_1x6.png}\\[3mm]
-    模態 11\\[1mm]
+    \textbf{(e) 第 11 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSSS_v11_1x6.png}\\[3mm]
-    模態 12\\[1mm]
+    \textbf{(f) 第 12 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/FSSS_v12_1x6.png}\\[3mm]
-    \caption{自由-简支-简支-简支（FSSS）方板屈曲临界荷载系数对比（v01–v12）（模态7–12）}
+    \caption{自由-简支-简支-简支（FSSS）方板第 7 至第 12 阶屈曲模态临界荷载系数对比}
     \label{CH4_buckling_FSSS_b}
 \end{figure}
 
+% TODO[图像核对] 补充本段观察句：自由度约束最弱的 FSSS 工况下 MF 方法相对 FEM 的精度优势是否保持，
+% 以及三种边界条件（FSCS、FSSS）之间的规律是否一致。
+
+最后计算简支-固支交替（SCSC）工况。单向压缩沿 $x$ 方向，SCSC 与 CSCS 的边编号相差一个 $90^\circ$ 旋转而荷载方向不变，两种工况的屈曲临界荷载系数并不相等，结果如图\ref{CH4_buckling_SCSC_a} 与图\ref{CH4_buckling_SCSC_b} 所示。
+
 \begin{figure}[H]
     \centering
-    模態  1\\[1mm]
+    \textbf{(a) 第 1 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SCSC_v01_1x6.png}\\[3mm]
-    模態  2\\[1mm]
+    \textbf{(b) 第 2 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SCSC_v02_1x6.png}\\[3mm]
-    模態  3\\[1mm]
+    \textbf{(c) 第 3 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SCSC_v03_1x6.png}\\[3mm]
-    模態  4\\[1mm]
+    \textbf{(d) 第 4 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SCSC_v04_1x6.png}\\[3mm]
-    模態  5\\[1mm]
+    \textbf{(e) 第 5 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SCSC_v05_1x6.png}\\[3mm]
-    模態  6\\[1mm]
+    \textbf{(f) 第 6 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SCSC_v06_1x6.png}\\[3mm]
-    \caption{简支-固支交替（SCSC）方板屈曲临界荷载系数对比（v01–v12）（模态1–6）}
+    \caption{简支-固支交替（SCSC）方板第 1 至第 6 阶屈曲模态临界荷载系数对比}
     \label{CH4_buckling_SCSC_a}
 \end{figure}
 \begin{figure}[H]
     \centering
-    模態  7\\[1mm]
+    \textbf{(a) 第 7 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SCSC_v07_1x6.png}\\[3mm]
-    模態  8\\[1mm]
+    \textbf{(b) 第 8 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SCSC_v08_1x6.png}\\[3mm]
-    模態  9\\[1mm]
+    \textbf{(c) 第 9 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SCSC_v09_1x6.png}\\[3mm]
-    模態 10\\[1mm]
+    \textbf{(d) 第 10 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SCSC_v10_1x6.png}\\[3mm]
-    模態 11\\[1mm]
+    \textbf{(e) 第 11 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SCSC_v11_1x6.png}\\[3mm]
-    模態 12\\[1mm]
+    \textbf{(f) 第 12 阶}\\[1mm]
     \includegraphics[width=\linewidth]{combined/layout_1x6_v9/SCSC_v12_1x6.png}\\[3mm]
-    \caption{简支-固支交替（SCSC）方板屈曲临界荷载系数对比（v01–v12）（模态7–12）}
+    \caption{简支-固支交替（SCSC）方板第 7 至第 12 阶屈曲模态临界荷载系数对比}
     \label{CH4_buckling_SCSC_b}
 \end{figure}
 
+% TODO[图像核对] 补充本段观察句：SCSC 与 CSCS 两种工况的对比结果是否互为对应，
+% 以及 SCSC 工况下各方法对第 1 阶模态的临界荷载系数差异。

@@ -5,10 +5,7 @@
 \usepackage{lineno}
 \usepackage{amsmath,amsfonts,amssymb,textcomp,ulem}
 \usepackage{booktabs,tabularray,float}
-\usepackage{listings}
 \graphicspath{{figures/}}
-
-
 
 \hypersetup{colorlinks=true,linkcolor=black,citecolor=black}
 
@@ -24,79 +21,11 @@
 }
 
 \mainmatter
-\chapter{绪论}
-\section{选题背景及意义}
 
-% TODO: 待补充——板结构应用背景、屈曲/振动失效、Mindlin板剪切自锁问题、研究意义
-
-\section{国内外研究历史及现状}
-
-% TODO: 待补充——按方法分类综述（缩减积分、混合元、无网格法、有限元无网格混合离散），每段含方法溯源、核心思想、优缺点
-
-\section{本文主要内容}
-
-% TODO: 待补充——(1)(2)(3)列出主要贡献 + 各章内容安排
-
-\chapter{剪切自锁问题}
-
-\section{剪切自锁现象的物理机制}
-
-% TODO: 补充剪切自锁物理机制的详细推导与论述
-
-\section{传统有限元免剪切自锁的方案}
-
-\subsection{减缩积分方案}
-
-% TODO: 补充减缩积分方案的原理与算例
-
-\subsection{位移-剪力混合离散方案}
-
-% TODO: 补充位移-剪力混合离散方案的详细论述
-
-\section{最优约束比与无网格增强免自锁方案}
-
-% TODO: 补充 LBB 条件与约束比的数学推导
-
-
-\section{Mindlin 板运动学方程}
-
-考虑 Mindlin 板的三维位移场 $\bar{u}_i(x_1,x_2,x_3)$：
-\begin{equation}
-\begin{cases}
-\bar{u}_\alpha(x_1,x_2,x_3) = u_\alpha(x_1,x_2) - x_3\varphi_\alpha(x_1,x_2), & \alpha = 1,2 \\
-\bar{u}_3(x_1,x_2,x_3) = w(x_1,x_2),
-\end{cases}
-\end{equation}
-其中 $u_\alpha$ 为中面面内位移，$w$ 为横向挠度，$\varphi_\alpha$ 为法线纤维的转角，$i,j=1,2,3$，$\alpha,\beta=1,2$，采用爱因斯坦求和约定。在小变形假设下，线性应变张量为 $\varepsilon_{ij} = \frac{1}{2}(u_{i,j}+u_{j,i})$。
-
-面内应变分量（$\alpha,\beta=1,2$）为
-\begin{equation}
-\varepsilon_{\alpha\beta} = \frac{1}{2}(u_{\alpha,\beta}+u_{\beta,\alpha})
-= \frac{x_3}{2}(\varphi_{\alpha,\beta}+\varphi_{\beta,\alpha})
-\equiv x_3 \kappa_{\alpha\beta},
-\end{equation}
-其中 $\kappa_{\alpha\beta} = \frac{1}{2}(\varphi_{\alpha,\beta}+\varphi_{\beta,\alpha})$ 为中面曲率。横向剪切应变（$\alpha=1,2$）为
-\begin{equation}
-\gamma_\alpha \equiv 2\varepsilon_{\alpha 3} = \bar{u}_{\alpha,3}+\bar{u}_{3,\alpha}
-= \varphi_\alpha + w_{,\alpha}.
-\end{equation}
-
-假设板处于平面应力状态（$\sigma_{33}=0$），材料为各向同性线弹性。面内应力与应变关系为 $\sigma_{\alpha\beta}=C_{\alpha\beta\gamma\delta}\varepsilon_{\gamma\delta}$，四阶弹性张量为：
-\begin{equation}
-C_{\alpha\beta\gamma\delta} = \frac{E}{1-\nu^2}\left[\nu\delta_{\alpha\beta}\delta_{\gamma\delta} + \frac{1-\nu}{2}(\delta_{\alpha\gamma}\delta_{\beta\delta}+\delta_{\alpha\delta}\delta_{\beta\gamma})\right],
-\end{equation}
-其中 $E$ 为杨氏模量，$\nu$ 为泊松比。横向剪应力需引入剪力修正系数 $\kappa$，有
-\begin{equation}
-\sigma_{\alpha 3} = \kappa G \gamma_\alpha, \qquad G = \frac{E}{2(1+\nu)},
-\end{equation}
-$\kappa$ 通常取 $5/6$。
-
-\section{小结}
-
-% TODO: 第二章小结
+\input{chapters/ch1_introduction}
+\input{chapters/ch2_shear_locking}
 
 \chapter{自由振动剪切自锁有限元无网格混合离散分析}
-
 \input{chapters/ch3_vibration_derivation}
 \input{examples/square_plate_vibration}
 \section{小结}
@@ -104,38 +33,27 @@ $\kappa$ 通常取 $5/6$。
 % TODO: 第三章小结
 
 \chapter{屈曲分析剪切自锁有限元无网格混合离散分析}
-
 \input{chapters/ch4_buckling_derivation}
 \input{examples/square_plate_buckling}
 \section{小结}
 
 % TODO: 第四章小结
 
+\chapter{结论与展望}
+
+% TODO: 待补充——全文结论（对应第3、4章数值结果）与研究展望
+% 展望可预留一句：斜板及各向异性板可作进一步研究（2026-09-12 用户决定斜板暂不进正文）
 
 % \include{acknowledgments}
 \appendix
-\chapter{附录}
+\chapter{应变分量逐项展开过程}
+\label{app:strain-expansion}
 
-% TODO: 待补充附录内容
-
-
-\backmatter-页眉另起设置
-\bibliography{references}-引用参考文献条目(.bib)
-\include{acknowledgments}-致谢
-\appendix-附录部分
-\include{appendixA}-附录章节
-\include{appendixB}-附录章节
-\include{cv}-个人简历
-
-\end{document}-结束正文
-\end{lstlisting}
-
+% TODO: 待补充附录内容（式(4.4)面内应变按 x_3 幂次分项、式(4.5)横向剪切与法向应变的逐项代入过程）
 
 \backmatter
 
-
 \bibliography{references}
-
 
 \include{cv}
 \include{ai}
