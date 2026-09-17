@@ -1,28 +1,25 @@
 % 方板自由振动数值算例
-% 格式对齐第四章：三线表（无竖线）、caption在表上方、不用\scriptsize、图片\linewidth
+% 结构：方板算例一节内放所有边界条件，不每个边界分小节
 
 \section{数值算例}
 
-通过数值算例系统检验不同边界条件下，混合格式在自由振动分析中的计算精度。本文数值算例采用无量纲材料参数，弹性模量 $E=1.0$，泊松比 $\nu=0.3$，密度 $\rho=1.0$，板厚 $h=10^{-3}$，板边长 $a=b=1.0$，剪切修正系数 $\kappa=5/6$。
+为检验本文所提混合离散格式在自由振动分析中的计算精度，本节对 Mindlin 方板在六种典型边界条件下的前若干阶固有频率进行计算。本文数值算例采用无量纲材料参数，方板边长 $a=b=1.0$，厚度 $h=10^{-3}$，材料系数分别为弹性模量 $E=1.0$、泊松比 $\nu=0.3$、密度 $\rho=1.0$，剪切修正系数取 Mindlin 板理论常用值 $\kappa=5/6$。
 
-无量纲频率参数定义为
+自由振动分析中采用无量纲频率参数
 \begin{equation}
-\lambda = \frac{\bar{\omega}}{\pi^2}, \qquad \bar{\omega} = \omega a^2 \sqrt{\frac{\rho h}{D^b}}, \qquad D^b = \frac{E h^3}{12(1-\nu^2)}.
+\lambda = \frac{\bar{\omega}}{\pi^2}, \qquad \bar{\omega} = \omega a^2 \sqrt{\frac{\rho h}{D^b}}, \qquad D^b = \frac{E h^3}{12(1-\nu^2)},
 \end{equation}
+其中 $\omega$ 为固有角频率，$D^b$ 为板的弯曲刚度。
 
-参考解取自 Liew 等人\cite{liew1993} 采用 $pb$-$2$ Rayleigh-Ritz 法计算的结果，对应 $a/b=1.0$、$t/b=0.001$。
+数值计算采用三节点三角形单元（Tri3）的均匀网格，网格密度从 $20\times20$ 逐步加密至 $30\times30$，共 11 种疏密不同的网格。该问题的参考解\cite{liew1993}为 Liew 等人采用 $pb$-$2$ Rayleigh-Ritz 法计算的无量纲频率，对应长宽比 $a/b=1.0$、厚跨比 $h/b=0.001$。本文对标准有限元（FEM）、缩减积分有限元（FEM 缩减积分）、三变量混合有限元（FEM 三变量）、无网格法（MF）及改进无网格法（MF2）五种方法的计算结果进行对比。
 
-\subsection{频率对比}
+\subsection{方板自由振动}
 
-五种数值方法用于对比：标准有限元（FEM）、缩减积分有限元（FEM缩减积分）、三变量混合有限元（FEM三变量）、无网格法（MF）、改进无网格法（MF2）。网格密度从 $20\times20$ 到 $30\times30$。
-
-% TODO[数据口径]：当前FEM列为h=1e-2结果，待重跑为h=1e-3后更新
-% TODO[方法说明]：MF与MF2最大相对差仅2.7e-4，非独立方法，需在表注说明
-% TODO[对称性]：CSCS与SCSC在方板自由振动下由90°旋转对称严格等价，需合并或注明
+表\ref{tab:vib_cccc}至表\ref{tab:vib_fsss}分别为六种边界条件下前 10 阶无量纲频率 $\lambda$ 的计算结果，各表均采用 $25\times25$ 的均匀 Tri3 网格。六种工况中，CCCC 表示四边固支，即四条边界上的挠度与转角均被约束；SSSS 表示四边简支，即四条边界上挠度为零、弯矩为零；CSCS 为两邻边简支、两邻边固支交替；SCSC 为 CSCS 旋转 $90^\circ$ 后的工况，二者在自由振动问题中完全等价；FSCS 为一边自由、对边固支、另两边简支；FSSS 为一边自由、其余三边简支。SCSC 的结果与 CSCS 相同，本文不再单独列表。
 
 \begin{table}[H]
 \centering
-\caption{CCCC边界前十阶无量纲频率 $\lambda$ 对比（Tri3网格，$25\times25$，$t/b=0.001$）}
+\caption{四边固支（CCCC）方板前10阶无量纲频率 $\lambda$（Tri3，$25\times25$，$h/b=0.001$）}
 \label{tab:vib_cccc}
 \begin{tabular}{crrrrrrr}
 \hline
@@ -44,7 +41,7 @@
 
 \begin{table}[H]
 \centering
-\caption{SSSS边界前十阶无量纲频率 $\lambda$ 对比（Tri3网格，$25\times25$，$t/b=0.001$）}
+\caption{四边简支（SSSS）方板前10阶无量纲频率 $\lambda$（Tri3，$25\times25$，$h/b=0.001$）}
 \label{tab:vib_ssss}
 \begin{tabular}{crrrrrrr}
 \hline
@@ -66,7 +63,7 @@
 
 \begin{table}[H]
 \centering
-\caption{CSCS边界前十阶无量纲频率 $\lambda$ 对比（Tri3网格，$25\times25$，$t/b=0.001$）}
+\caption{CSCS方板前10阶无量纲频率 $\lambda$（Tri3，$25\times25$，$h/b=0.001$）}
 \label{tab:vib_cscs}
 \begin{tabular}{crrrrrrr}
 \hline
@@ -86,11 +83,9 @@
 \end{tabular}
 \end{table}
 
-% TODO[对称性]：SCSC与CSCS在方板自由振动下由90°旋转对称严格等价，数据完全相同，可考虑合并
-
 \begin{table}[H]
 \centering
-\caption{FSCS边界前十阶无量纲频率 $\lambda$ 对比（Tri3网格，$25\times25$，$t/b=0.001$）}
+\caption{FSCS方板前10阶无量纲频率 $\lambda$（Tri3，$25\times25$，$h/b=0.001$）}
 \label{tab:vib_fscs}
 \begin{tabular}{crrrrrrr}
 \hline
@@ -112,7 +107,7 @@
 
 \begin{table}[H]
 \centering
-\caption{FSSS边界前十阶无量纲频率 $\lambda$ 对比（Tri3网格，$25\times25$，$t/b=0.001$）}
+\caption{FSSS方板前10阶无量纲频率 $\lambda$（Tri3，$25\times25$，$h/b=0.001$）}
 \label{tab:vib_fsss}
 \begin{tabular}{crrrrrrr}
 \hline
@@ -132,37 +127,72 @@
 \end{tabular}
 \end{table}
 
-\subsection{收敛分析}
+从表\ref{tab:vib_cccc}至表\ref{tab:vib_fsss}中可以看出，在六种边界条件下，MF、MF2 与 FEM 三变量混合元的无量纲频率均与标准解吻合良好，以 CCCC 工况最低阶模态为例，三者的相对误差分别约为 0.01\%、0.01\% 与 0.8\%；标准 FEM 的无量纲频率整体偏高约 147\%～167\%，且随模态阶次升高偏高程度增大，表现出明显的剪切自锁现象。表中『FEM 缩减积分』列的数值异常偏大，其对应的积分口径有待进一步确认，此处暂不作为结论依据。
 
-收敛分析采用绝对差值
+收敛性分析以第一阶模态为考察对象，定义误差
 \begin{equation}
 e = |\lambda_{\mathrm{num}} - \lambda_{\mathrm{ref}}|,
 \end{equation}
-其中 $\lambda_{\mathrm{num}}$ 为数值解，$\lambda_{\mathrm{ref}}$ 为标准解。图\ref{vib_convergence} 给出六种边界条件下第一阶模态的收敛曲线。图中横坐标为 $\log_{10}(h)$，$h=1/n$ 为单元尺寸；纵坐标为 $\log_{10}(e)$，误差值越往下表示结果越精确。
+其中 $\lambda_{\mathrm{num}}$ 为数值解，$\lambda_{\mathrm{ref}}$ 为标准解。图\ref{vib_convergence}为六种边界条件下第一阶模态的无量纲频率误差随网格加密的收敛曲线，图中横坐标为 $\log_{10}(h)$，$h=1/n$ 为单元边长；纵坐标为 $\log_{10}(e)$。误差值越往下，表示结果越精确。
+
+从图中可以看出，MF、MF2 与 FEM 三变量混合元的频率误差随网格加密逐渐减小并保持在较低水平；标准 FEM 的频率误差始终维持在较高水平，随网格加密下降缓慢。『FEM 缩减积分』的误差异常偏大，其积分口径有待进一步确认，此处暂不纳入结论。
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{vibration/convergence_first_mode_all.png}
+\includegraphics[width=\linewidth]{vibration/convergence_first_mode_3x2.png}
 \caption{六种边界条件第一阶模态无量纲频率的对数误差收敛曲线}
 \label{vib_convergence}
 \end{figure}
 
-% TODO[图件中文化+去边框]：当前收敛图标签为英文且有坐标轴边框，需重画为无框图
+四边简支方板的自由振动模态具有解析形式，可作为振型对比的基准。图\ref{vib_modal_ssss}为四边简支（SSSS）方板前六阶模态变形的对比图，图中列为不同数值方法，行为模态阶次。
 
-\subsection{模态对比}
-
-四边简支（SSSS）方板的自由振动模态具有解析形式，可直接作为振型对比的基准。图\ref{vib_modal_ssss} 给出 SSSS 边界下前六阶模态的变形图对比。每张图的列为不同数值方法，行为模态阶次。
-
-% TODO[图件中文化+去边框]：当前模态图标签为英文且有坐标轴边框，需重画
+从图中可以看出，最低阶（第 1 阶）模态处，MF、MF2 与 FEM 三变量混合元的模态变形均与标准解一致，其对应的无量纲频率与标准解吻合良好；标准 FEM 的模态变形相对标准解出现明显偏差，其对应的无量纲频率亦明显偏高，表现出剪切自锁。对于第 2、3 阶等重根模态，各方法对重根振型的分辨与标准解之间的对应关系详见图中面板。
 
 \begin{figure}[H]
 \centering
-\textbf{(a) 第 1 阶}\\[1mm]
-\includegraphics[width=\linewidth]{vibration/modal_shapes_SSSS.png}\\[3mm]
-\caption{四边简支（SSSS）方板前六阶模态变形图对比}
+\begin{tabular}{cccccc}
+& MF & MF2 & FEM & FEM-RI & FEM-Mix \\
+Mode 1 &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/mf_SSSS_v₁.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/mf2_SSSS_v₁.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/fem_SSSS_v₁.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/fem_ri_SSSS_v₁.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/fem_mix_SSSS_v₁.png} \\
+Mode 2 &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/mf_SSSS_v₂.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/mf2_SSSS_v₂.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/fem_SSSS_v₂.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/fem_ri_SSSS_v₂.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/fem_mix_SSSS_v₂.png} \\
+Mode 3 &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/mf_SSSS_v₃.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/mf2_SSSS_v₃.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/fem_SSSS_v₃.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/fem_ri_SSSS_v₃.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/fem_mix_SSSS_v₃.png} \\
+Mode 4 &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/mf_SSSS_v₄.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/mf2_SSSS_v₄.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/fem_SSSS_v₄.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/fem_ri_SSSS_v₄.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/fem_mix_SSSS_v₄.png} \\
+Mode 5 &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/mf_SSSS_v₅.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/mf2_SSSS_v₅.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/fem_SSSS_v₅.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/fem_ri_SSSS_v₅.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/fem_mix_SSSS_v₅.png} \\
+Mode 6 &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/mf_SSSS_v₆.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/mf2_SSSS_v₆.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/fem_SSSS_v₆.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/fem_ri_SSSS_v₆.png} &
+\includegraphics[width=0.18\textwidth]{vibration/modal_panels/fem_mix_SSSS_v₆.png}
+\end{tabular}
+\caption{四边简支（SSSS）方板前六阶模态变形对比}
 \label{vib_modal_ssss}
 \end{figure}
 
-% TODO[待补充]：CCCC等其他边界的模态图（当前无标准模态，待后续补充）
-% TODO[待补充]：收敛率定量值（MF、FEM三变量混合元对各边界的网格收敛斜率）
-% TODO[待补充]：结果分析文字（读图三件套：图例解读→读法说明→结论）
+% TODO[待补充]：斜板自由振动算例
+% TODO[待补充]：圆板自由振动算例
+% TODO[待补充]：收敛率定量值与结果分析文字
